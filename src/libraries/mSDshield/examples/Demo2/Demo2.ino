@@ -68,7 +68,8 @@ void showDir(char *path)
 void setup()
 {
   //init Serial port
-  Serial.begin(38400); 
+  Serial.begin(9600); 
+  while(!Serial); //wait for serial port to connect - needed for Leonardo only
 
   //init Display
   Serial.println("Init Display...");
