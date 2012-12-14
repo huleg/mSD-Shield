@@ -239,7 +239,7 @@ uint8_t ADS7846::doCalibration(MI0283QT2 *lcd, uint16_t eeprom_addr, uint8_t che
 {
   uint8_t i;
   CAL_POINT lcd_points[3] = {CAL_POINT1, CAL_POINT2, CAL_POINT3}; //calibration point postions
-  CAL_POINT tp_points[3], *p;
+  CAL_POINT tp_points[3];
 
   //calibration data in EEPROM?
   if(readCalibration(eeprom_addr) && check_eeprom)
@@ -313,7 +313,7 @@ void ADS7846::calibrate(void)
     tp_last.y = tp.y;
     x = tp.x;
     y = tp.y;
-	  y = ((tp_matrix.d * x) + (tp_matrix.e * y) + tp_matrix.f) / tp_matrix.div;
+    y = ((tp_matrix.d * x) + (tp_matrix.e * y) + tp_matrix.f) / tp_matrix.div;
          if(y < 0)           { y = 0; }
     else if(y >= LCD_HEIGHT) { y = LCD_HEIGHT-1; }
     lcd.y = y;
@@ -327,7 +327,6 @@ uint16_t ADS7846::getX(void)
 {
   calibrate();
 
-  //set orientation
   switch(lcd_orientation)
   {
     case   0: return lcd.x;
@@ -344,7 +343,6 @@ uint16_t ADS7846::getY(void)
 {
   calibrate();
 
-  //set orientation
   switch(lcd_orientation)
   {
     case   0: return lcd.y;
