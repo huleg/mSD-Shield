@@ -1,5 +1,5 @@
 # mSD-Shield
-The mSD-Shield is a plug-on module with microSD socket and optional 2.8" TFT-Display with Touch-Panel for Arduino.
+The mSD-Shield is a plug-on module with microSD socket, RTC (real time clock) with battery backup, prototyping area and optional 2.8" TFT-Display with Touch-Panel for Arduino.
 
 <http://www.watterott.com/en/Arduino-mSD-Shield>
 
@@ -11,7 +11,7 @@ The mSD-Shield is a plug-on module with microSD socket and optional 2.8" TFT-Dis
 ## Hardware
 Compatible with Arduino Uno, Duemilanove, Diecimila and Mega.
 
-Normal edition: On Mega boards only Software-SPI and no RTC without hardware modifications.
+Normal edition: For Uno/Duemilanove/Diecimila. On Mega boards only Software-SPI and no RTC without hardware modifications.
 
 Mega edition: Uno/Mega adjustment via jumper.
 
