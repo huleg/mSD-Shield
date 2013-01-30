@@ -2,10 +2,10 @@
   SaveFileDemo (Display + SD-Card)
  */
 
-#include <MI0283QT2.h>
+#include <MI0283QT2.h> //#include <MI0283QT9.h>
 #include <SDcard.h>
 
-MI0283QT2 lcd;
+MI0283QT2 lcd; //MI0283QT9 lcd;
 SDcard sd;
 
 

@@ -10,6 +10,7 @@ extern "C" {
 }
 #endif
 #include "../MI0283QT2/MI0283QT2.h"
+#include "../MI0283QT9/MI0283QT9.h"
 
 
 #define CAL_POINT_X1 (20)
@@ -69,6 +70,7 @@ class ADS7846
     uint8_t writeCalibration(uint16_t eeprom_addr);
     uint8_t readCalibration(uint16_t eeprom_addr);
     uint8_t doCalibration(MI0283QT2 *lcd, uint16_t eeprom_addr, uint8_t check_eeprom);
+    uint8_t doCalibration(MI0283QT9 *lcd, uint16_t eeprom_addr, uint8_t check_eeprom);
     void calibrate(void);
     uint16_t getX(void);
     uint16_t getY(void);

@@ -2,12 +2,12 @@
   Demo 1 (Display + Touch-Panel)
  */
 
-#include <MI0283QT2.h>
+#include <MI0283QT2.h> //#include <MI0283QT9.h>
 #include <ADS7846.h>
 
 #define TP_EEPROMADDR (0x00) //eeprom address for calibration data
 
-MI0283QT2 lcd;
+MI0283QT2 lcd; //MI0283QT9 lcd;
 ADS7846 tp;
 
 

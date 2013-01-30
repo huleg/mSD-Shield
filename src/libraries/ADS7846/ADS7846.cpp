@@ -17,6 +17,7 @@ extern "C" {
 #include "../digitalWriteFast/digitalWriteFast.h"
 #include "ADS7846.h"
 #include "../MI0283QT2/MI0283QT2.h"
+#include "../MI0283QT9/MI0283QT9.h"
 
 
 #define MIN_PRESSURE    (5) //minimum pressure
@@ -291,6 +292,62 @@ uint8_t ADS7846::doCalibration(MI0283QT2 *lcd, uint16_t eeprom_addr, uint8_t che
 }
 
 
+uint8_t ADS7846::doCalibration(MI0283QT9 *lcd, uint16_t eeprom_addr, uint8_t check_eeprom) //touch panel calibration routine
+{
+  uint8_t i;
+  CAL_POINT lcd_points[3] = {CAL_POINT1, CAL_POINT2, CAL_POINT3}; //calibration point postions
+  CAL_POINT tp_points[3];
+
+  //calibration data in EEPROM?
+  if(readCalibration(eeprom_addr) && check_eeprom)
+  {
+    return 0;
+  }
+
+  //clear screen and wait for touch release
+  lcd->clear(COLOR_WHITE);
+  lcd->drawTextPGM((lcd->getWidth()/2)-50, (lcd->getHeight()/2)-10, PSTR("Calibration"), 1, COLOR_BLACK, COLOR_WHITE);
+  while(getPressure() > MIN_PRESSURE){ service(); };
+
+  //show calibration points
+  for(i=0; i<3; )
+  {
+    //draw points
+    lcd->drawCircle(lcd_points[i].x, lcd_points[i].y,  2, RGB(  0,  0,  0));
+    lcd->drawCircle(lcd_points[i].x, lcd_points[i].y,  5, RGB(  0,  0,  0));
+    lcd->drawCircle(lcd_points[i].x, lcd_points[i].y, 10, RGB(255,  0,  0));
+
+    //run service routine
+    service();
+
+    //press dectected? -> save point
+    if(getPressure() > MIN_PRESSURE)
+    {
+      lcd->fillCircle(lcd_points[i].x, lcd_points[i].y, 2, RGB(255,0,0));
+      tp_points[i].x = getXraw();
+      tp_points[i].y = getYraw();
+      i++;
+
+      //wait and redraw screen
+      delay(100);
+      lcd->clear(COLOR_WHITE);
+      lcd->drawTextPGM((lcd->getWidth()/2)-50, (lcd->getHeight()/2)-10, PSTR("Calibration"), 1, COLOR_BLACK, COLOR_WHITE);
+    }
+  }
+
+  //calulate calibration matrix
+  setCalibration(lcd_points, tp_points);
+
+  //save calibration matrix
+  writeCalibration(eeprom_addr);
+
+  //wait for touch release
+  while(getPressure() > MIN_PRESSURE){ service(); };
+
+  return 1;
+}
+
+
 void ADS7846::calibrate(void)
 {
   long x, y;
@@ -386,30 +443,36 @@ void ADS7846::service(void)
 
 void ADS7846::rd_data(void)
 {
-  uint8_t a, b, i;
+  uint8_t p, a1, a2, b1, b2;
   uint16_t x, y;
 
   //SPI speed-down
 #if !defined(SOFTWARE_SPI)
   uint8_t spcr, spsr;
   spcr = SPCR;
-  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0); //enable SPI, Master, clk=Fcpu/16
   spsr = SPSR;
-  SPSR = (1<<SPI2X); //clk*2 -> clk=Fcpu/8
+# if F_CPU >= 8000000UL
+  SPCR = (1<<SPE)|(1<<MSTR); //enable SPI, Master, clk=Fcpu/4
+  SPSR = 0;
+# else if F_CPU >= 4000000UL
+  SPCR = (1<<SPE)|(1<<MSTR); //enable SPI, Master, clk=Fcpu/4
+  SPSR = (1<<SPI2X); //clk*2 -> clk=Fcpu/2
+# endif
 #endif
 
   //get pressure
   CS_ENABLE();
   wr_spi(CMD_START | CMD_8BIT | CMD_DIFF | CMD_Z1_POS);
-  a = rd_spi();
+  a1 = rd_spi();
   wr_spi(CMD_START | CMD_8BIT | CMD_DIFF | CMD_Z2_POS);
-  b = 127-(rd_spi()&0x7F);
+  b1 = 127-(rd_spi()&0x7F);
   CS_DISABLE();
-  pressure = a+b;
+  p = a1 + b1;
 
-  if(pressure >= MIN_PRESSURE)
+  if(p >= MIN_PRESSURE)
   {
-    for(x=0, y=0, i=4; i!=0; i--) //4 samples
+    /*//using 4 samples for x and y position
+    for(x=0, y=0, i=4; i!=0; i--)
     {
       CS_ENABLE();
       //get X data
@@ -425,13 +488,43 @@ void ADS7846::rd_data(void)
       CS_DISABLE();
     }
     x >>= 2; //x/4
-    y >>= 2; //y/4
+    y >>= 2; //y/4*/
+    
+    //using 2 samples for x and y position
+    CS_ENABLE();
+    //get X data
+    wr_spi(CMD_START | CMD_12BIT | CMD_DIFF | CMD_X_POS);
+    a1 = rd_spi();
+    b1 = rd_spi();
+    wr_spi(CMD_START | CMD_12BIT | CMD_DIFF | CMD_X_POS);
+    a2 = rd_spi();
+    b2 = rd_spi();
 
-    if((x >= 10) && (y >= 10))
+    if(a1 == a2)
     {
-      tp.x = x;
-      tp.y = y;
+      x = 1023-((a2<<2)|(b2>>6)); //12bit: ((a<<4)|(b>>4)) //10bit: ((a<<2)|(b>>6))
+
+      //get Y data
+      wr_spi(CMD_START | CMD_12BIT | CMD_DIFF | CMD_Y_POS);
+      a1 = rd_spi();
+      b1 = rd_spi();
+      wr_spi(CMD_START | CMD_12BIT | CMD_DIFF | CMD_Y_POS);
+      a2 = rd_spi();
+      b2 = rd_spi();
+
+      if(a1 == a2)
+      {
+        y = ((a2<<2)|(b2>>6)); //12bit: ((a<<4)|(b>>4)) //10bit: ((a<<2)|(b>>6))
+        if(x && y)
+        {
+          tp.x = x;
+          tp.y = y;
+        }
+        pressure = p;
+      }
     }
+
+    CS_DISABLE();
   }
   else
   {

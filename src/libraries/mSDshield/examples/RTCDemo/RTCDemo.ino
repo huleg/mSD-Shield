@@ -2,11 +2,11 @@
   RTCDemo (Display + RTC)
  */
 
-#include <MI0283QT2.h>
+#include <MI0283QT2.h> //#include <MI0283QT9.h>
 #include <Wire.h>
 #include <DS1307.h>
 
-MI0283QT2 lcd;
+MI0283QT2 lcd; //MI0283QT9 lcd;
 DS1307 rtc;
 
 

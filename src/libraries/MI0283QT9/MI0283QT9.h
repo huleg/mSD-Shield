@@ -1,5 +1,5 @@
-#ifndef MI0283QT2_h
-#define MI0283QT2_h
+#ifndef MI0283QT9_h
+#define MI0283QT9_h
 
 
 #ifdef __cplusplus
@@ -50,14 +50,62 @@ extern "C" {
 # define BIN (2)
 #endif
 
+#define LCD_CMD_NOP                    0x00
+#define LCD_CMD_RESET                  0x01
+#define LCD_CMD_SLEEPIN                0x10
+#define LCD_CMD_SLEEPOUT               0x11
+#define LCD_CMD_PARTIAL_MODE           0x12
+#define LCD_CMD_NORMAL_MODE            0x13
+#define LCD_CMD_INV_OFF                0x20
+#define LCD_CMD_INV_ON                 0x21
+#define LCD_CMD_GAMMA                  0x26
+#define LCD_CMD_DISPLAY_OFF            0x28
+#define LCD_CMD_DISPLAY_ON             0x29
+#define LCD_CMD_COLUMN                 0x2A
+#define LCD_CMD_PAGE                   0x2B
+#define LCD_CMD_WRITE                  0x2C
+#define LCD_CMD_READ                   0x2E
+#define LCD_CMD_PARTIAL_AREA           0x30
+#define LCD_CMD_TEARING_OFF            0x34
+#define LCD_CMD_TEARING_ON             0x35
+#define LCD_CMD_MEMACCESS_CTRL         0x36
+#define LCD_CMD_IDLE_OFF               0x38
+#define LCD_CMD_IDLE_ON                0x39
+#define LCD_CMD_PIXEL_FORMAT           0x3A
+#define LCD_CMD_WRITE_CNT              0x3C
+#define LCD_CMD_READ_CNT               0x3E
+#define LCD_CMD_BRIGHTNESS             0x51
+#define LCD_CMD_BRIGHTNESS_CTRL        0x53
+#define LCD_CMD_RGB_CTRL               0xB0
+#define LCD_CMD_FRAME_CTRL             0xB1 //normal mode
+#define LCD_CMD_FRAME_CTRL_IDLE        0xB2 //idle mode
+#define LCD_CMD_FRAME_CTRL_PART        0xB3 //partial mode
+#define LCD_CMD_INV_CTRL               0xB4
+#define LCD_CMD_DISPLAY_CTRL           0xB6
+#define LCD_CMD_ENTRY_MODE             0xB7
+#define LCD_CMD_POWER_CTRL1            0xC0
+#define LCD_CMD_POWER_CTRL2            0xC1
+#define LCD_CMD_VCOM_CTRL1             0xC5
+#define LCD_CMD_VCOM_CTRL2             0xC7
+#define LCD_CMD_POWER_CTRLA            0xCB
+#define LCD_CMD_POWER_CTRLB            0xCF
+#define LCD_CMD_POS_GAMMA              0xE0
+#define LCD_CMD_NEG_GAMMA              0xE1
+#define LCD_CMD_DRV_TIMING_CTRLA       0xE8
+#define LCD_CMD_DRV_TIMING_CTRLB       0xEA
+#define LCD_CMD_POWERON_SEQ_CTRL       0xED
+#define LCD_CMD_ENABLE_3G              0xF2
+#define LCD_CMD_INTERF_CTRL            0xF6
+#define LCD_CMD_PUMP_RATIO_CTRL        0xF7
 
-class MI0283QT2 : public Print
+
+class MI0283QT9 : public Print
 {
   public:
     uint16_t lcd_orientation;
     uint16_t lcd_width, lcd_height;
 
-    MI0283QT2();
+    MI0283QT9();
     void init(uint8_t clock_div); //2 4 8 16 32
     void led(uint8_t power); //0-100
 
@@ -112,11 +160,12 @@ class MI0283QT2 : public Print
     uint16_t p_x, p_y;
 
     void reset(void);
-    void wr_cmd(uint8_t reg, uint8_t param);
-    void wr_data(uint16_t data);
+    void wr_cmd(uint8_t cmd);
+    void wr_data16(uint16_t data);
+    void wr_data(uint8_t data);
     void wr_spi(uint8_t data);
     void delay_10ms(uint8_t ms);
 };
 
 
-#endif //MI0283QT2_h
+#endif //MI0283QT9_h

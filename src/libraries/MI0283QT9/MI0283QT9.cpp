@@ -15,15 +15,11 @@ extern "C" {
 #endif
 #include "../digitalWriteFast/digitalWriteFast.h"
 #include "fonts.h"
-#include "MI0283QT2.h"
+#include "MI0283QT9.h"
 
 
 #define PRINT_STARTX    (2)
 #define PRINT_STARTY    (2)
-
-#define LCD_ID          (0)
-#define LCD_DATA        ((0x72)|(LCD_ID<<2))
-#define LCD_REGISTER    ((0x70)|(LCD_ID<<2))
 
 //#define SOFTWARE_SPI
 
@@ -88,7 +84,7 @@ extern "C" {
 //-------------------- Constructor --------------------
 
 
-MI0283QT2::MI0283QT2(void)
+MI0283QT9::MI0283QT9(void)
 {
   return;
 }
@@ -97,20 +93,22 @@ MI0283QT2::MI0283QT2(void)
 //-------------------- Public --------------------
 
 
-void MI0283QT2::init(uint8_t clock_div)
+void MI0283QT9::init(uint8_t clock_div)
 {
   //init pins
   pinMode(LED_PIN, OUTPUT);
-  digitalWriteFast(LED_PIN, LOW);
+  digitalWrite(LED_PIN, LOW);
   led(50);
   pinMode(RST_PIN, OUTPUT);
-  digitalWriteFast(RST_PIN, LOW);
+  digitalWrite(RST_PIN, LOW);
   pinMode(CS_PIN, OUTPUT);
-  digitalWriteFast(CS_PIN, HIGH);
+  digitalWrite(CS_PIN, HIGH);
   pinMode(CLK_PIN, OUTPUT);
+  digitalWrite(CLK_PIN, LOW);
   pinMode(MOSI_PIN, OUTPUT);
+  digitalWrite(MOSI_PIN, LOW);
   pinMode(MISO_PIN, INPUT);
-  digitalWriteFast(MISO_PIN, HIGH); //pull-up
+  digitalWrite(MISO_PIN, HIGH); //pull-up
 
 #if !defined(SOFTWARE_SPI)
   //SS has to be output or input with pull-up
@@ -166,7 +164,7 @@ void MI0283QT2::init(uint8_t clock_div)
 }
 
 
-void MI0283QT2::led(uint8_t power)
+void MI0283QT9::led(uint8_t power)
 {
   if(power == 0) //off
   {
@@ -187,8 +185,17 @@ void MI0283QT2::led(uint8_t power)
 }
 
 
-void MI0283QT2::setOrientation(uint16_t o)
+void MI0283QT9::setOrientation(uint16_t o)
 {
+  #define MEM_Y   (7) //MY row address order
+  #define MEM_X   (6) //MX column address order 
+  #define MEM_V   (5) //MV row / column exchange 
+  #define MEM_L   (4) //ML vertical refresh order
+  #define MEM_H   (2) //MH horizontal refresh order
+  #define MEM_BGR (3) //RGB-BGR Order 
+
+  wr_cmd(LCD_CMD_MEMACCESS_CTRL);
+
   switch(o)
   {
     default:
@@ -196,28 +203,28 @@ void MI0283QT2::setOrientation(uint16_t o)
       lcd_orientation = 0;
       lcd_width  = 320;
       lcd_height = 240;
-      wr_cmd(0x16, 0x00A8); //MY=1 MX=0 MV=1 ML=0 BGR=1
+      wr_data((1<<MEM_BGR) | (1<<MEM_X) | (1<<MEM_Y) | (1<<MEM_V));
       break;
 
     case 90:
       lcd_orientation = 90;
       lcd_width  = 240;
       lcd_height = 320;
-      wr_cmd(0x16, 0x0008); //MY=0 MX=0 MV=0 ML=0 BGR=1
+      wr_data((1<<MEM_BGR) | (1<<MEM_X));
       break;
 
     case 180:
       lcd_orientation = 180;
       lcd_width  = 320;
       lcd_height = 240;
-      wr_cmd(0x16, 0x0068); //MY=0 MX=1 MV=1 ML=0 BGR=1
+      wr_data((1<<MEM_BGR) | (1<<MEM_L) | (1<<MEM_V));
       break;
 
     case 270:
       lcd_orientation = 270;
       lcd_width  = 240;
       lcd_height = 320;
-      wr_cmd(0x16, 0x00C8); //MY=1 MX=0 MV=1 ML=0 BGR=1
+      wr_data((1<<MEM_BGR) | (1<<MEM_Y));
       break;
   }
   
@@ -230,19 +237,19 @@ void MI0283QT2::setOrientation(uint16_t o)
 }
 
 
-uint16_t MI0283QT2::getWidth(void)
+uint16_t MI0283QT9::getWidth(void)
 {
   return lcd_width;
 }
 
 
-uint16_t MI0283QT2::getHeight(void)
+uint16_t MI0283QT9::getHeight(void)
 {
   return lcd_height;
 }
 
 
-void MI0283QT2::setArea(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+void MI0283QT9::setArea(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
   if((x1 >= lcd_width) ||
      (y1 >= lcd_height))
@@ -250,20 +257,19 @@ void MI0283QT2::setArea(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
     return;
   }
 
-  wr_cmd(0x03, (x0>>0)); //set x0
-  wr_cmd(0x02, (x0>>8)); //set x0
-  wr_cmd(0x05, (x1>>0)); //set x1
-  wr_cmd(0x04, (x1>>8)); //set x1
-  wr_cmd(0x07, (y0>>0)); //set y0
-  wr_cmd(0x06, (y0>>8)); //set y0
-  wr_cmd(0x09, (y1>>0)); //set y1
-  wr_cmd(0x08, (y1>>8)); //set y1
+  wr_cmd(LCD_CMD_COLUMN);
+  wr_data16(x0);
+  wr_data16(x1);
+
+  wr_cmd(LCD_CMD_PAGE);
+  wr_data16(y0);
+  wr_data16(y1);
 
   return;
 }
 
 
-void MI0283QT2::setCursor(uint16_t x, uint16_t y)
+void MI0283QT9::setCursor(uint16_t x, uint16_t y)
 {
   setArea(x, y, x, y);
 
@@ -271,7 +277,7 @@ void MI0283QT2::setCursor(uint16_t x, uint16_t y)
 }
 
 
-void MI0283QT2::clear(uint16_t color)
+void MI0283QT9::clear(uint16_t color)
 {
   uint16_t size;
 
@@ -295,30 +301,49 @@ void MI0283QT2::clear(uint16_t color)
 }
 
 
-void MI0283QT2::drawStart(void)
+void MI0283QT9::drawStart(void)
 {
+  wr_cmd(LCD_CMD_WRITE);
   CS_ENABLE();
-  wr_spi(LCD_REGISTER);
-  wr_spi(0x22);
-  CS_DISABLE();
-
-  CS_ENABLE();
-  wr_spi(LCD_DATA);
 
   return;
 }
 
 
-void MI0283QT2::draw(uint16_t color)
+void MI0283QT9::draw(uint16_t color)
 {
+
+  //9th bit
+  MOSI_HIGH(); //data
+  CLK_LOW();
+#if defined(SOFTWARE_SPI)
+  CLK_HIGH();
+#else
+  SPCR &= ~(1<<SPE); //disable SPI
+  CLK_HIGH();
+  SPCR |= (1<<SPE); //enable SPI
+#endif
+
   wr_spi(color>>8);
+
+  //9th bit
+  MOSI_HIGH(); //data
+  CLK_LOW();
+#if defined(SOFTWARE_SPI)
+  CLK_HIGH();
+#else
+  SPCR &= ~(1<<SPE); //disable SPI
+  CLK_HIGH();
+  SPCR |= (1<<SPE); //enable SPI
+#endif
+
   wr_spi(color);
 
   return;
 }
 
 
-void MI0283QT2::drawStop(void)
+void MI0283QT9::drawStop(void)
 {
   CS_DISABLE();
 
@@ -326,7 +351,7 @@ void MI0283QT2::drawStop(void)
 }
 
 
-void MI0283QT2::drawPixel(uint16_t x0, uint16_t y0, uint16_t color)
+void MI0283QT9::drawPixel(uint16_t x0, uint16_t y0, uint16_t color)
 {
   if((x0 >= lcd_width) ||
      (y0 >= lcd_height))
@@ -344,7 +369,7 @@ void MI0283QT2::drawPixel(uint16_t x0, uint16_t y0, uint16_t color)
 }
 
 
-void MI0283QT2::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color)
+void MI0283QT9::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color)
 {
 	int16_t dx, dy, dx2, dy2, err, stepx, stepy;
 
@@ -418,7 +443,7 @@ void MI0283QT2::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
 }
 
 
-void MI0283QT2::drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color)
+void MI0283QT9::drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color)
 {
   fillRect(x0, y0, x0, y1, color);
   fillRect(x0, y1, x1, y1, color);
@@ -429,7 +454,7 @@ void MI0283QT2::drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
 }
 
 
-void MI0283QT2::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color)
+void MI0283QT9::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color)
 {
   uint32_t size;
   uint16_t tmp, i;
@@ -492,7 +517,7 @@ void MI0283QT2::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
 }
 
 
-void MI0283QT2::drawCircle(uint16_t x0, uint16_t y0, uint16_t radius, uint16_t color)
+void MI0283QT9::drawCircle(uint16_t x0, uint16_t y0, uint16_t radius, uint16_t color)
 {
   int16_t err, x, y;
   
@@ -528,7 +553,7 @@ void MI0283QT2::drawCircle(uint16_t x0, uint16_t y0, uint16_t radius, uint16_t c
 }
 
 
-void MI0283QT2::fillCircle(uint16_t x0, uint16_t y0, uint16_t radius, uint16_t color)
+void MI0283QT9::fillCircle(uint16_t x0, uint16_t y0, uint16_t radius, uint16_t color)
 {
   int16_t err, x, y;
   
@@ -560,7 +585,7 @@ void MI0283QT2::fillCircle(uint16_t x0, uint16_t y0, uint16_t radius, uint16_t c
 }
 
 
-uint16_t MI0283QT2::drawChar(uint16_t x, uint16_t y, char c, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawChar(uint16_t x, uint16_t y, char c, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   uint16_t ret;
 #if FONT_WIDTH <= 8
@@ -674,7 +699,7 @@ uint16_t MI0283QT2::drawChar(uint16_t x, uint16_t y, char c, uint8_t size, uint1
 }
 
 
-uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, char *s, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawText(uint16_t x, uint16_t y, char *s, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   while(*s != 0)
   {
@@ -689,7 +714,7 @@ uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, char *s, uint8_t size, uint
 }
 
 
-uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, int i, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawText(uint16_t x, uint16_t y, int i, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[16];
 
@@ -699,7 +724,7 @@ uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, int i, uint8_t size, uint16
 }
 
 
-uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, unsigned int i, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawText(uint16_t x, uint16_t y, unsigned int i, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[16];
 
@@ -709,7 +734,7 @@ uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, unsigned int i, uint8_t siz
 }
 
 
-uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, long l, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawText(uint16_t x, uint16_t y, long l, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[32];
 
@@ -719,7 +744,7 @@ uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, long l, uint8_t size, uint1
 }
 
 
-uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, unsigned long l, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawText(uint16_t x, uint16_t y, unsigned long l, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[32];
 
@@ -729,7 +754,7 @@ uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, unsigned long l, uint8_t si
 }
 
 
-uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, String &s, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawText(uint16_t x, uint16_t y, String &s, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   uint16_t i;
 
@@ -746,7 +771,7 @@ uint16_t MI0283QT2::drawText(uint16_t x, uint16_t y, String &s, uint8_t size, ui
 }
 
 
-uint16_t MI0283QT2::drawTextPGM(uint16_t x, uint16_t y, PGM_P s, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawTextPGM(uint16_t x, uint16_t y, PGM_P s, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char c;
 
@@ -765,7 +790,7 @@ uint16_t MI0283QT2::drawTextPGM(uint16_t x, uint16_t y, PGM_P s, uint8_t size, u
 }
 
 
-uint16_t MI0283QT2::drawMLText(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, char *s, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawMLText(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, char *s, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   uint16_t x=x0, y=y0, wlen, llen;
   char c;
@@ -839,7 +864,7 @@ uint16_t MI0283QT2::drawMLText(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y
 }
 
 
-uint16_t MI0283QT2::drawMLText(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, String &s, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawMLText(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, String &s, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   uint16_t x=x0, y=y0, wstart, wlen, llen, p;
   char c;
@@ -912,7 +937,7 @@ uint16_t MI0283QT2::drawMLText(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y
 }
 
 
-uint16_t MI0283QT2::drawMLTextPGM(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, PGM_P s, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawMLTextPGM(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, PGM_P s, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   uint16_t x=x0, y=y0, wlen, llen;
   char c;
@@ -990,7 +1015,7 @@ uint16_t MI0283QT2::drawMLTextPGM(uint16_t x0, uint16_t y0, uint16_t x1, uint16_
 }
 
 
-uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, char val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawInteger(uint16_t x, uint16_t y, char val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[16+1];
 
@@ -1000,7 +1025,7 @@ uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, char val, uint8_t base, 
 }
 
 
-uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, unsigned char val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawInteger(uint16_t x, uint16_t y, unsigned char val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[16+1];
 
@@ -1010,7 +1035,7 @@ uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, unsigned char val, uint8
 }
 
 
-uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, int val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawInteger(uint16_t x, uint16_t y, int val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[16+1];
 
@@ -1020,7 +1045,7 @@ uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, int val, uint8_t base, u
 }
 
 
-uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, long val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
+uint16_t MI0283QT9::drawInteger(uint16_t x, uint16_t y, long val, uint8_t base, uint8_t size, uint16_t color, uint16_t bg_color)
 {
   char tmp[32+1];
 
@@ -1030,7 +1055,7 @@ uint16_t MI0283QT2::drawInteger(uint16_t x, uint16_t y, long val, uint8_t base, 
 }
 
 
-void MI0283QT2::printOptions(uint8_t size, uint16_t color, uint16_t bg_color)
+void MI0283QT9::printOptions(uint8_t size, uint16_t color, uint16_t bg_color)
 {
   p_size = size;
   p_fg   = color;
@@ -1040,7 +1065,7 @@ void MI0283QT2::printOptions(uint8_t size, uint16_t color, uint16_t bg_color)
 }
 
 
-void MI0283QT2::printClear(void)
+void MI0283QT9::printClear(void)
 {
   clear(p_bg);
 
@@ -1051,7 +1076,7 @@ void MI0283QT2::printClear(void)
 }
 
 
-void MI0283QT2::printXY(uint16_t x, uint16_t y)
+void MI0283QT9::printXY(uint16_t x, uint16_t y)
 {
   p_x = x;
   p_y = y;
@@ -1060,19 +1085,19 @@ void MI0283QT2::printXY(uint16_t x, uint16_t y)
 }
 
 
-uint16_t MI0283QT2::printGetX(void)
+uint16_t MI0283QT9::printGetX(void)
 {
   return p_x;
 }
 
 
-uint16_t MI0283QT2::printGetY(void)
+uint16_t MI0283QT9::printGetY(void)
 {
   return p_y;
 }
 
 
-void MI0283QT2::printPGM(PGM_P s)
+void MI0283QT9::printPGM(PGM_P s)
 {
   uint16_t x=p_x, y=p_y, x_last;
   char c;
@@ -1119,7 +1144,7 @@ void MI0283QT2::printPGM(PGM_P s)
 }
 
 
-size_t MI0283QT2::write(uint8_t c)
+size_t MI0283QT9::write(uint8_t c)
 {
   uint16_t x=p_x, y=p_y;
 
@@ -1159,7 +1184,7 @@ size_t MI0283QT2::write(uint8_t c)
 }
 
 
-size_t MI0283QT2::write(const char *s)
+size_t MI0283QT9::write(const char *s)
 {
   size_t len=0;
 
@@ -1173,7 +1198,7 @@ size_t MI0283QT2::write(const char *s)
 }
 
 
-size_t MI0283QT2::write(const uint8_t *s, size_t size)
+size_t MI0283QT9::write(const uint8_t *s, size_t size)
 {
   size_t len=0;
 
@@ -1191,7 +1216,7 @@ size_t MI0283QT2::write(const uint8_t *s, size_t size)
 //-------------------- Private --------------------
 
 
-void MI0283QT2::reset(void)
+void MI0283QT9::reset(void)
 {
   //SPI speed-down
 #if !defined(SOFTWARE_SPI)
@@ -1207,46 +1232,92 @@ void MI0283QT2::reset(void)
   RST_ENABLE();
   delay_10ms(5);
   RST_DISABLE();
-  delay_10ms(5);
+  delay_10ms(12);
 
-  //driving ability
-  wr_cmd(0xEA, 0x0000);
-  wr_cmd(0xEB, 0x0020);
-  wr_cmd(0xEC, 0x000C);
-  wr_cmd(0xED, 0x00C4);
-  wr_cmd(0xE8, 0x0040);
-  wr_cmd(0xE9, 0x0038);
-  wr_cmd(0xF1, 0x0001);
-  wr_cmd(0xF2, 0x0010);
-  wr_cmd(0x27, 0x00A3);
+  //lcd_wrcmd(LCD_CMD_RESET);
+  //delay_10ms(12);
+  wr_cmd(LCD_CMD_DISPLAY_OFF);
+  delay_10ms(2);
 
-  //power voltage
-  wr_cmd(0x1B, 0x001B);
-  wr_cmd(0x1A, 0x0001);
-  wr_cmd(0x24, 0x002F);
-  wr_cmd(0x25, 0x0057);
+  //send init commands
+  wr_cmd(LCD_CMD_POWER_CTRLB);
+  wr_data(0x00);
+  wr_data(0x83); //83 81 AA
+  wr_data(0x30);
 
-  //VCOM offset
-  wr_cmd(0x23, 0x008D); //for flicker adjust
+  wr_cmd(LCD_CMD_POWERON_SEQ_CTRL);
+  wr_data(0x64); //64 67
+  wr_data(0x03);
+  wr_data(0x12);
+  wr_data(0x81);
 
-  //power on
-  wr_cmd(0x18, 0x0036);
-  wr_cmd(0x19, 0x0001); //start osc
-  wr_cmd(0x01, 0x0000); //wakeup
-  wr_cmd(0x1F, 0x0088);
-  _delay_ms(5);
-  wr_cmd(0x1F, 0x0080);
-  _delay_ms(5);
-  wr_cmd(0x1F, 0x0090);
-  _delay_ms(5);
-  wr_cmd(0x1F, 0x00D0);
-  _delay_ms(5);
+  wr_cmd(LCD_CMD_DRV_TIMING_CTRLA);
+  wr_data(0x85);
+  wr_data(0x01);
+  wr_data(0x79); //79 78
 
-  //color selection
-  wr_cmd(0x17, 0x0005); //0x0005=65k, 0x0006=262k
+  wr_cmd(LCD_CMD_POWER_CTRLA);
+  wr_data(0x39);
+  wr_data(0X2C);
+  wr_data(0x00);
+  wr_data(0x34);
+  wr_data(0x02);
 
-  //panel characteristic
-  wr_cmd(0x36, 0x0000);
+  wr_cmd(LCD_CMD_PUMP_RATIO_CTRL);
+  wr_data(0x20);
+
+  wr_cmd(LCD_CMD_DRV_TIMING_CTRLB);
+  wr_data(0x00);
+  wr_data(0x00);
+
+  wr_cmd(LCD_CMD_POWER_CTRL1);
+  wr_data(0x26); //26 25
+  
+  wr_cmd(LCD_CMD_POWER_CTRL2);
+  wr_data(0x11);
+
+  wr_cmd(LCD_CMD_VCOM_CTRL1);
+  wr_data(0x35);
+  wr_data(0x3E);
+
+  wr_cmd(LCD_CMD_VCOM_CTRL2);
+  wr_data(0xBE); //BE 94
+
+  wr_cmd(LCD_CMD_FRAME_CTRL);
+  wr_data(0x00);
+  wr_data(0x1B); //1B 70
+
+  //gamma control
+  /*wr_cmd(LCD_CMD_ENABLE_3G);
+  wr_data(0x08); //08 00
+  wr_cmd(LCD_CMD_GAMMA);
+  wr_data(0x01); //G2.2
+  wr_cmd(LCD_CMD_POS_GAMMA);
+  uint8_t pgama[15] = {0x1F, 0x1A, 0x18, 0x0A, 0x0F, 0x06, 0x45, 0x87, 0x32, 0x0A, 0x07, 0x02, 0x07, 0x05, 0x00};
+  //uint8_t pgama[15] = {0x0F, 0x1A, 0x18, 0x0A, 0x0F, 0x06, 0x45, 0x87, 0x32, 0x0A, 0x07, 0x02, 0x07, 0x05, 0x00};
+  for(uint8_t i=0; i<15; i++)
+  {
+    wr_data(pgama[i]);
+  }
+  wr_cmd(LCD_CMD_NEG_GAMMA);
+  uint8_t ngama[15] = {0x00, 0x25, 0x27, 0x05, 0x10, 0x09, 0x3A, 0x78, 0x4D, 0x05, 0x18, 0x0D, 0x38, 0x3A, 0x1F};
+  //uint8_t ngama[15] = {0x00, 0x25, 0x27, 0x05, 0x10, 0x09, 0x3A, 0x78, 0x4D, 0x05, 0x18, 0x0D, 0x38, 0x3A, 0x0F};
+  for(uint8_t i=0; i<15; i++)
+  {
+    wr_data(ngama[i]);
+  }*/
+
+  wr_cmd(LCD_CMD_DISPLAY_CTRL);
+  wr_data(0x0A);
+  wr_data(0x82);
+  wr_data(0x27);
+  wr_data(0x00);
+
+  wr_cmd(LCD_CMD_ENTRY_MODE);
+  wr_data(0x07);
+
+  wr_cmd(LCD_CMD_PIXEL_FORMAT);
+  wr_data(0x55); //16bit
 
   //display options
   setOrientation(0);
@@ -1254,10 +1325,11 @@ void MI0283QT2::reset(void)
   //clear display buffer
   clear(0);
 
-  //display on
-  wr_cmd(0x28, 0x0038);
-  delay_10ms(4);
-  wr_cmd(0x28, 0x003C);
+  //display on / sleep out
+  wr_cmd(LCD_CMD_SLEEPOUT);
+  delay_10ms(12);
+  wr_cmd(LCD_CMD_DISPLAY_ON);
+  delay_10ms(2);
 
   //restore SPI settings
 #if !defined(SOFTWARE_SPI)
@@ -1269,40 +1341,92 @@ void MI0283QT2::reset(void)
 }
 
 
-void MI0283QT2::wr_cmd(uint8_t reg, uint8_t param)
+void MI0283QT9::wr_cmd(uint8_t cmd)
 {
   CS_ENABLE();
-  wr_spi(LCD_REGISTER);
-  wr_spi(reg);
-  CS_DISABLE();
 
-  CS_ENABLE();
-  wr_spi(LCD_DATA);
-  wr_spi(param);
+  //9th bit
+  MOSI_LOW(); //cmd
+  CLK_LOW();
+#if defined(SOFTWARE_SPI)
+  CLK_HIGH();
+#else
+  SPCR &= ~(1<<SPE); //disable SPI
+  CLK_HIGH();
+  SPCR |= (1<<SPE); //enable SPI
+#endif
+
+  wr_spi(cmd);
+
   CS_DISABLE();
 
   return;
 }
 
 
-void MI0283QT2::wr_data(uint16_t data)
+void MI0283QT9::wr_data16(uint16_t data)
 {
   CS_ENABLE();
-  wr_spi(LCD_DATA);
+
+  //9th bit
+  MOSI_HIGH(); //data
+  CLK_LOW();
+#if defined(SOFTWARE_SPI)
+  CLK_HIGH();
+#else
+  SPCR &= ~(1<<SPE); //disable SPI
+  CLK_HIGH();
+  SPCR |= (1<<SPE); //enable SPI
+#endif
+
   wr_spi(data>>8);
+
+  //9th bit
+  MOSI_HIGH(); //data
+  CLK_LOW();
+#if defined(SOFTWARE_SPI)
+  CLK_HIGH();
+#else
+  SPCR &= ~(1<<SPE); //disable SPI
+  CLK_HIGH();
+  SPCR |= (1<<SPE); //enable SPI
+#endif
+
   wr_spi(data);
+
   CS_DISABLE();
 
   return;
 }
 
 
-void MI0283QT2::wr_spi(uint8_t data)
+void MI0283QT9::wr_data(uint8_t data)
+{
+  CS_ENABLE();
+
+  //9th bit
+  MOSI_HIGH(); //data
+  CLK_LOW();
+#if defined(SOFTWARE_SPI)
+  CLK_HIGH();
+#else
+  SPCR &= ~(1<<SPE); //disable SPI
+  CLK_HIGH();
+  SPCR |= (1<<SPE); //enable SPI
+#endif
+
+  wr_spi(data);
+
+  CS_DISABLE();
+
+  return;
+}
+
+
+void MI0283QT9::wr_spi(uint8_t data)
 {
 #if defined(SOFTWARE_SPI)
-  uint8_t mask;
-
-  for(mask=0x80; mask!=0; mask>>=1)
+  for(uint8_t mask=0x80; mask!=0; mask>>=1)
   {
     CLK_LOW();
     if(mask & data)
@@ -1326,7 +1450,7 @@ void MI0283QT2::wr_spi(uint8_t data)
 }
 
 
-void MI0283QT2::delay_10ms(uint8_t ms) //delay of 10ms * x
+void MI0283QT9::delay_10ms(uint8_t ms) //delay of 10ms * x
 {
   for(; ms!=0; ms--)
   {
