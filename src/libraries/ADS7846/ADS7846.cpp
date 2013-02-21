@@ -20,7 +20,7 @@ extern "C" {
 #include "../MI0283QT9/MI0283QT9.h"
 
 
-#define MIN_PRESSURE    (5) //minimum pressure
+#define MIN_PRESSURE    (5) //minimum pressure 1...254
 
 #define LCD_WIDTH       (320)
 #define LCD_HEIGHT      (240)
@@ -469,7 +469,7 @@ void ADS7846::rd_data(void)
   CS_DISABLE();
   p = a1 + b1;
 
-  if(p >= MIN_PRESSURE)
+  if(p > MIN_PRESSURE)
   {
     /*//using 4 samples for x and y position
     for(x=0, y=0, i=4; i!=0; i--)

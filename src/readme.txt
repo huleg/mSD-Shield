@@ -36,7 +36,8 @@ Known issues
     mSD-Shield on the Mega, then Software-SPI has to be enabled in
     the Arduino libs. Uncomment the following lines:
       libraries/ADS7846/ADS7846.cpp:40 (#define SOFTWARE_SPI)
-      libraries/MIO283QT2/MIO283QT2.cpp:29 (#define SOFTWARE_SPI)
+      libraries/MIO283QT2/MIO283QT2.cpp:28 (#define SOFTWARE_SPI)
+      libraries/MIO283QT9/MIO283QT9.cpp:24 (#define SOFTWARE_SPI)
       libraries/SDcard/mmc.h:8 (#define SD_SOFTWARE_SPI)
 
 
