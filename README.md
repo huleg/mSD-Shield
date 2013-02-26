@@ -18,9 +18,3 @@ Mega edition: Uno/Mega adjustment via jumper.
 ![mSD-Shield hardware dia](https://github.com/watterott/mSD-Shield/raw/master/img/hw_dia.png)
 
 _Note: The normal edition has RTC from >= v1.2 and Mega edition has RTC from >= v1.1_
-
-
-## Directories
- /pcb - Schematics and Layout files
-
- /src - Arduino Library and Examples
