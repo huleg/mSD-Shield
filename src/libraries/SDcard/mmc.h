@@ -35,6 +35,13 @@
 # define SD_MISO_PIN         (6)
 # define SD_CLK_PIN          (7)
 
+#elif defined(__AVR_ATmega32U4__)      //--- Arduino Leonardo ---
+
+# define SD_CS_PIN           (4) //4 or 10
+# define SD_MOSI_PIN         (16) //PB2
+# define SD_MISO_PIN         (14) //PB3
+# define SD_CLK_PIN          (15) //PB1
+
 #else                                  //--- Arduino Uno ---
 
 # define SD_CS_PIN           (4) //4 or 10
@@ -76,6 +83,14 @@
 # define SD_MOSI_PIN         (5)
 # define SD_MISO_PIN         (6)
 # define SD_CLK_PIN          (7)
+
+#elif defined(__AVR_ATmega32U4__)      //--- Arduino Leonardo ---
+
+# define SD_PWR_PIN          (8)
+# define SD_CS_PIN           (9)
+# define SD_MOSI_PIN         (16) //PB2
+# define SD_MISO_PIN         (14) //PB3
+# define SD_CLK_PIN          (15) //PB1
 
 #else                                  //--- Arduino Uno ---
 

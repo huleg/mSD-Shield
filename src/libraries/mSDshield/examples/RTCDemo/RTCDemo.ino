@@ -2,11 +2,11 @@
   RTCDemo (Display + RTC)
  */
 
-#include <MI0283QT2.h> //#include <MI0283QT9.h>
+#include <MI0283QT9.h> //include <MI0283QT2.h> or <MI0283QT9.h>
 #include <Wire.h>
 #include <DS1307.h>
 
-MI0283QT2 lcd; //MI0283QT9 lcd;
+MI0283QT9 lcd; //declare MI0283QT2 or MI0283QT9
 DS1307 rtc;
 
 
@@ -27,8 +27,8 @@ void setup()
 
   //init RTC
   Serial.println("Init RTC...");
-    //only set the date+time one time
-    //rtc.set(0, 0, 8, 24, 12, 2011); //08:00:00 24.12.2011 //sec, min, hour, day, month, year
+  //only set the date+time one time
+  //  rtc.set(0, 0, 8, 24, 12, 2013); //08:00:00 24.12.2013 //sec, min, hour, day, month, year
   rtc.start();
 }
 

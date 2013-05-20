@@ -32,7 +32,7 @@ extern "C" {
      defined(__AVR_ATmega2560__) || \
      defined(__AVR_ATmega2561__))      //--- Arduino Mega ---
 
-# define LED_PIN        (9) //PH6: OC2B
+# define LED_PIN        (9) //PH6
 # define RST_PIN        (8)
 # define CS_PIN         (7)
 # if defined(SOFTWARE_SPI)
@@ -48,16 +48,25 @@ extern "C" {
 #elif (defined(__AVR_ATmega644__) || \
        defined(__AVR_ATmega644P__))    //--- Arduino 644 (www.mafu-foto.de) ---
 
-# define LED_PIN        (3) //PB3: OC0
+# define LED_PIN        (3) //PB3
 # define RST_PIN        (12)
 # define CS_PIN         (13)
 # define MOSI_PIN       (5)
 # define MISO_PIN       (6)
 # define CLK_PIN        (7)
 
+#elif defined(__AVR_ATmega32U4__)      //--- Arduino Leonardo ---
+
+# define LED_PIN        (9) //PB5
+# define RST_PIN        (8)
+# define CS_PIN         (7)
+# define MOSI_PIN       (16) //PB2
+# define MISO_PIN       (14) //PB3
+# define CLK_PIN        (15) //PB1
+
 #else                                  //--- Arduino Uno ---
 
-# define LED_PIN        (9) //PB1: OC1
+# define LED_PIN        (9) //PB1
 # define RST_PIN        (8)
 # define CS_PIN         (7)
 # define MOSI_PIN       (11)
@@ -122,6 +131,8 @@ void MI0283QT2::init(uint8_t clock_div)
 # elif (defined(__AVR_ATmega644__) || \
         defined(__AVR_ATmega644P__))   //--- Arduino 644 ---
 #  define SS_PORTBIT (4) //PB4
+# elif defined(__AVR_ATmega32U4__)     //--- Arduino Leonardo ---
+#  define SS_PORTBIT (0) //PB0
 # else                                 //--- Arduino Uno ---
 #  define SS_PORTBIT (2) //PB2
 # endif

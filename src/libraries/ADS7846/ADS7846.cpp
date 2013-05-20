@@ -67,6 +67,15 @@ extern "C" {
 # define MISO_PIN       (6)
 # define CLK_PIN        (7)
 
+#elif defined(__AVR_ATmega32U4__)      //--- Arduino Leonardo ---
+
+//# define BUSY_PIN       (5)
+//# define IRQ_PIN        (3)
+# define CS_PIN         (6)
+# define MOSI_PIN       (16) //PB2
+# define MISO_PIN       (14) //PB3
+# define CLK_PIN        (15) //PB1
+
 #else                                  //--- Arduino Uno ---
 
 //# define BUSY_PIN       (5)
@@ -115,14 +124,14 @@ void ADS7846::init(void)
   pinMode(CLK_PIN, OUTPUT);
   pinMode(MOSI_PIN, OUTPUT);
   pinMode(MISO_PIN, INPUT);
-  digitalWriteFast(MISO_PIN, HIGH); //pull-up
+  digitalWrite(MISO_PIN, HIGH); //pull-up
 #ifdef IRQ_PIN
   pinMode(IRQ_PIN, INPUT);
-  digitalWriteFast(IRQ_PIN, HIGH); //pull-up
+  digitalWrite(IRQ_PIN, HIGH); //pull-up
 #endif
 #ifdef BUSY_PIN
   pinMode(BUSY_PIN, INPUT);
-  digitalWriteFast(BUSY_PIN, HIGH); //pull-up
+  digitalWrite(BUSY_PIN, HIGH); //pull-up
 #endif
 
 #if !defined(SOFTWARE_SPI)
@@ -135,6 +144,8 @@ void ADS7846::init(void)
 # elif (defined(__AVR_ATmega644__) || \
         defined(__AVR_ATmega644P__))   //--- Arduino 644 ---
 #  define SS_PORTBIT (4) //PB4
+# elif defined(__AVR_ATmega32U4__)     //--- Arduino Leonardo ---
+#  define SS_PORTBIT (0) //PB0
 # else                                 //--- Arduino Uno ---
 #  define SS_PORTBIT (2) //PB2
 # endif

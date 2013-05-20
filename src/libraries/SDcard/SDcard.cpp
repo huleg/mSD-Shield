@@ -55,6 +55,8 @@ void SDcard::init(uint8_t clock_div)
 # elif (defined(__AVR_ATmega644__) || \
         defined(__AVR_ATmega644P__))   //--- Arduino 644 ---
 #  define SD_SS_PORTBIT (4) //PB4
+# elif defined(__AVR_ATmega32U4__)     //--- Arduino Leonardo ---
+#  define SD_SS_PORTBIT (0) //PB0
 # else                                 //--- Arduino Uno ---
 #  define SD_SS_PORTBIT (2) //PB2
 # endif

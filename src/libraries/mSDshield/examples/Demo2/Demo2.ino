@@ -2,10 +2,10 @@
   Demo 2 (Display + SD-Card)
  */
 
-#include <MI0283QT2.h> //#include <MI0283QT9.h>
+#include <MI0283QT9.h> //include <MI0283QT2.h> or <MI0283QT9.h>
 #include <SDcard.h>
 
-MI0283QT2 lcd; //MI0283QT9 lcd;
+MI0283QT9 lcd; //declare MI0283QT2 or MI0283QT9
 SDcard sd;
 
 #if _USE_LFN //use LFN (long file names)

@@ -61,22 +61,6 @@
 (((P) == 2) ? 4 : \
 (((P) == 3 || (P) == 4) ? 5 : 7)))))))))))))))
 
-// 15 PWM
-#define __digitalPinToTimer(P) \
-(((P) == 13 || (P) ==  4) ? &TCCR0A : \
-(((P) == 11 || (P) == 12) ? &TCCR1A : \
-(((P) == 10 || (P) ==  9) ? &TCCR2A : \
-(((P) ==  5 || (P) ==  2 || (P) ==  3) ? &TCCR3A : \
-(((P) ==  6 || (P) ==  7 || (P) ==  8) ? &TCCR4A : \
-(((P) == 46 || (P) == 45 || (P) == 44) ? &TCCR5A : 0))))))
-#define __digitalPinToTimerBit(P) \
-(((P) == 13) ? COM0A1 : (((P) ==  4) ? COM0B1 : \
-(((P) == 11) ? COM1A1 : (((P) == 12) ? COM1B1 : \
-(((P) == 10) ? COM2A1 : (((P) ==  9) ? COM2B1 : \
-(((P) ==  5) ? COM3A1 : (((P) ==  2) ? COM3B1 : (((P) ==  3) ? COM3C1 : \
-(((P) ==  6) ? COM4A1 : (((P) ==  7) ? COM4B1 : (((P) ==  8) ? COM4C1 : \
-(((P) == 46) ? COM5A1 : (((P) == 45) ? COM5B1 : COM5C1))))))))))))))
-
 
 #elif (defined(__AVR_ATmega644__) || \
        defined(__AVR_ATmega644P__))
@@ -90,15 +74,18 @@
 #define __digitalPinToBit(P) \
 (((P) >= 0 && (P) <= 7) ? (P) : (((P) >= 8 && (P) <= 15) ? (P) - 8 : (((P) >= 16 && (P) <= 23) ? (P) - 16 : (P) - 24)))
 
-// 6 PWM
-#define __digitalPinToTimer(P) \
-(((P) ==  3 || (P) ==  4) ? &TCCR0A : \
-(((P) == 12 || (P) == 13) ? &TCCR1A : \
-(((P) == 14 || (P) == 15) ? &TCCR2A : 0)))
-#define __digitalPinToTimerBit(P) \
-(((P) ==  3) ? COM0A1 : (((P) ==  4) ? COM0B1 : \
-(((P) == 13) ? COM1A1 : (((P) == 12) ? COM1B1 : \
-(((P) == 15) ? COM2A1 : COM2B1)))))
+
+#elif (defined(__AVR_ATmega16U4__) || \
+       defined(__AVR_ATmega32U4__))
+// Arduino Leonardo Pins
+#define __digitalPinToPortReg(P) \
+((((P) >= 0 && (P) <= 4) || (P) == 6 || (P) == 12 || (P) == 24 || (P) == 25 || (P) == 29) ? &PORTD : (((P) == 5 || (P) == 13) ? &PORTC : (((P) >= 18 && (P) <= 23)) ? &PORTF : (((P) == 7) ? &PORTE : &PORTB)))
+#define __digitalPinToDDRReg(P) \
+((((P) >= 0 && (P) <= 4) || (P) == 6 || (P) == 12 || (P) == 24 || (P) == 25 || (P) == 29) ? &DDRD : (((P) == 5 || (P) == 13) ? &DDRC : (((P) >= 18 && (P) <= 23)) ? &DDRF : (((P) == 7) ? &DDRE : &DDRB)))
+#define __digitalPinToPINReg(P) \
+((((P) >= 0 && (P) <= 4) || (P) == 6 || (P) == 12 || (P) == 24 || (P) == 25 || (P) == 29) ? &PIND : (((P) == 5 || (P) == 13) ? &PINC : (((P) >= 18 && (P) <= 23)) ? &PINF : (((P) == 7) ? &PINE : &PINB)))
+#define __digitalPinToBit(P) \
+(((P) >= 8 && (P) <= 11) ? (P) - 4 : (((P) >= 18 && (P) <= 21) ? 25 - (P) : (((P) == 0) ? 2 : (((P) == 1) ? 3 : (((P) == 2) ? 1 : (((P) == 3) ? 0 : (((P) == 4) ? 4 : (((P) == 6) ? 7 : (((P) == 13) ? 7 : (((P) == 14) ? 3 : (((P) == 15) ? 1 : (((P) == 16) ? 2 : (((P) == 17) ? 0 : (((P) == 22) ? 1 : (((P) == 23) ? 0 : (((P) == 24) ? 4 : (((P) == 25) ? 7 : (((P) == 26) ? 4 : (((P) == 27) ? 5 : 6 )))))))))))))))))))
 
 
 #else
@@ -111,25 +98,6 @@
 (((P) >= 0 && (P) <= 7) ? &PIND : (((P) >= 8 && (P) <= 13) ? &PINB : &PINC))
 #define __digitalPinToBit(P) \
 (((P) >= 0 && (P) <= 7) ? (P) : (((P) >= 8 && (P) <= 13) ? (P) - 8 : (P) - 14))
-
-#if defined(__AVR_ATmega8__)
-// 3 PWM
-#define __digitalPinToTimer(P) \
-(((P) ==  9 || (P) == 10) ? &TCCR1A : (((P) == 11) ? &TCCR2 : 0))
-#define __digitalPinToTimerBit(P) \
-(((P) ==  9) ? COM1A1 : (((P) == 10) ? COM1B1 : COM21))
-#else  //168,328
-
-// 6 PWM
-#define __digitalPinToTimer(P) \
-(((P) ==  6 || (P) ==  5) ? &TCCR0A : \
-(((P) ==  9 || (P) == 10) ? &TCCR1A : \
-(((P) == 11 || (P) ==  3) ? &TCCR2A : 0)))
-#define __digitalPinToTimerBit(P) \
-(((P) ==  6) ? COM0A1 : (((P) ==  5) ? COM0B1 : \
-(((P) ==  9) ? COM1A1 : (((P) == 10) ? COM1B1 : \
-(((P) == 11) ? COM2A1 : COM2B1)))))
-#endif  //defined(__AVR_ATmega8__)
 
 
 #endif
@@ -151,19 +119,19 @@ if (__builtin_constant_p(P) && __builtin_constant_p(V)) { \
 #if !defined(pinModeFast)
 #define pinModeFast(P, V) \
 if (__builtin_constant_p(P) && __builtin_constant_p(V)) { \
-  if (digitalPinToTimer(P)) \
-    BIT_CLEAR(*__digitalPinToTimer(P), __digitalPinToTimerBit(P)); \
   BIT_WRITE(*__digitalPinToDDRReg(P), __digitalPinToBit(P), (V)); \
-} else {  \
+} else { \
   pinMode((P), (V)); \
-} 
+}
 #endif
 
 
 #if !defined(digitalReadFast)
 #define digitalReadFast(P) ( (int) __digitalReadFast((P)) )
 #define __digitalReadFast(P) \
-(__builtin_constant_p(P)) \
-  ? BIT_READ(*__digitalPinToPINReg(P), __digitalPinToBit(P)) \
-  : digitalRead((P))
+if (__builtin_constant_p(P)) { \
+  BIT_READ(*__digitalPinToPINReg(P), __digitalPinToBit(P)); \
+} else { \
+  digitalRead((P)); \
+}
 #endif

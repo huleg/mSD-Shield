@@ -1,11 +1,11 @@
 # mSD-Shield
 The mSD-Shield is a plug-on module with microSD socket, RTC (real time clock) with battery backup, prototyping area and optional 2.8" TFT-Display with Touch-Panel for Arduino.
 
-<http://www.watterott.com/en/Arduino-mSD-Shield>
+http://www.watterott.com/en/Arduino-mSD-Shield
 
-<http://www.watterott.com/en/Arduino-Mega-mSD-Shield>
+http://www.watterott.com/en/Arduino-Mega-mSD-Shield
 
-![mSD-Shield](https://github.com/watterott/mSD-Shield/raw/master/img/msd-shield.jpg)
+![mSD-Shield](https://raw.github.com/watterott/mSD-Shield/master/img/msd-shield.jpg)
 
 
 ## Hardware
@@ -15,6 +15,6 @@ Normal edition: For Uno/Duemilanove/Diecimila. On Mega boards only Software-SPI 
 
 Mega edition: Uno/Mega adjustment via jumper.
 
-![mSD-Shield hardware dia](https://github.com/watterott/mSD-Shield/raw/master/img/hw_dia.png)
+![mSD-Shield hardware dia](https://raw.github.com/watterott/mSD-Shield/master/img/hw_dia.png)
 
 _Note: The normal edition has RTC from >= v1.2 and Mega edition has RTC from >= v1.1_
