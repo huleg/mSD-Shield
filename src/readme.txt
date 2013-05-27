@@ -3,47 +3,9 @@ mSD-Shield Software Package
   Visit github.com/watterott/msd-shield for updates.
 
 
-Installation
-------------
-  Copy the content of /libraries/ to your Arduino lib folder 
-  /arduino/libraries/ or to your user documents folder
-  /My Documents/Arduino/libraries/
-  If there are existing folders from a previous installation,
-  please delete them before copying.
-  Further infos: http://www.arduino.cc/en/Hacking/Libraries
-
-
 Documentation
 -------------
-  See docu.htm
-
-
-Known issues
-------------
-  If using the Ethernet-Shield together with the mSD-Shield, 
-  this must be initialized before using the SD-Card.
-
-  Normal mSD-Shield, not mSD Mega-Edition:
-
-    For Hardware-SPI support on Mega boards connect the mSD-Shield
-    as follows. No Software changes are required.
-     Signal  Mega  mSD-Shield
-      SCK     52  ->  13
-      MOSI    51  ->  11
-      MISO    50  ->  12
-    Or if you dont want to make any pin changes, but use the
-    mSD-Shield on the Mega, then Software-SPI has to be enabled in
-    the Arduino libs. Uncomment the following lines:
-      libraries/ADS7846/ADS7846.cpp:40 (#define SOFTWARE_SPI)
-      libraries/MIO283QT2/MIO283QT2.cpp:28 (#define SOFTWARE_SPI)
-      libraries/MIO283QT9/MIO283QT9.cpp:24 (#define SOFTWARE_SPI)
-      libraries/SDcard/mmc.h:8 (#define SD_SOFTWARE_SPI)
-
-    For using the RTC on Mega boards the I2C pins have to be
-    changed.
-     Signal  Mega  mSD-Shield (v1.2)
-      SDA     20  ->  A4
-      SCL     21  ->  A5
+  See docu.md
 
 
 Third party software
