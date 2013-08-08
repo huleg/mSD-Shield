@@ -60,7 +60,7 @@ Unmount the memory card.
 
 See also the FatFS docu for more information about the file system functions (*f_open()*...):
 */libraries/SDcard/doc/00index_e.html* or http://elm-chan.org/fsw/ff/00index_e.html
-To enable LFN support (long file names) set **_USE_LFN** to **1** in */libraries/SDcard/ffconf.h*. The *Demo2* has also LFN support.
+To enable LFN support (long file names) set ```_USE_LFN``` to **1** in */libraries/SDcard/ffconf.h*. The *Demo2* has also LFN support.
 
 
 ### DS1307
@@ -301,8 +301,8 @@ Print text from RAM.
 #### Note
 
 The text functions can draw characters from 0x20 to 0x7F and the default font is 8x12.
-To change the font to 8x8 uncomment the **FONT_8X8** definition and comment the **FONT_8X12** definition in */libraries/MI0283QTx/fonts.h*
-To support characters from 0x20 to 0xFF comment the **FONT_END7F** definition in */libraries/MI0283QTx/fonts.h*.
+To change the font to 8x8 uncomment the ```FONT_8X8``` definition and comment the ```FONT_8X12``` definition in */libraries/MI0283QTx/fonts.h*
+To support characters from 0x20 to 0xFF comment the ```FONT_END7F``` definition in */libraries/MI0283QTx/fonts.h*.
 
 Use Umlaut characters as hex values, for example "Test \x84 \x94 \x81 \x8E \x99 \x9A" to display "Test ä ö ü Ä Ö Ü"
 

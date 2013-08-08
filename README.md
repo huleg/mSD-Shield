@@ -9,10 +9,14 @@ http://www.watterott.com/en/Arduino-Mega-mSD-Shield
 
 
 ## Hardware
-Compatible with Arduino Uno, Duemilanove, Diecimila, Mega and Leonardo.
+**mSD-Shield v2.x**: For Arduino Uno, Mega and Leonardo.
 
-mSD-Shield v1: For Uno boards. On Mega/Leonardo boards only Software-SPI and no RTC without hardware modifications.
+**mSD-Shield v1.x**: For Arduino Uno. On Mega/Leonardo boards only Software-SPI and no RTC without hardware modifications.
 
-Mega mSD-Shield v1: Uno/Mega adjustment via jumper.
+**Mega mSD-Shield v1.x**: For Arduino Uno and Mega. Uno/Mega adjustment via jumper.
 
 ![mSD-Shield hardware dia](https://raw.github.com/watterott/mSD-Shield/master/img/hw_dia.png)
+
+
+## Software
+* [Arduino Library + Examples](https://github.com/watterott/mSD-Shield/tree/master/src)
