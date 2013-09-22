@@ -9,8 +9,15 @@ Shop:
 ![mSD-Shield](https://raw.github.com/watterott/mSD-Shield/master/img/msd-shield.jpg)
 
 
+## Features
+* microSD socket (SPI)
+* DS1307 RTC (I2C) with backup battery
+* Optional MI0283QT-Adapter (2.8" 240x320 Display with Touch-Panel)
+* Prototyping Area
+
+
 ## Hardware
-**mSD-Shield v2.x**: For Arduino Uno, Mega and Leonardo.
+**mSD-Shield v2.x**: For Arduino Uno, Leonardo and Mega .
 
 **mSD-Shield v1.x**: For Arduino Uno. On Mega/Leonardo boards only Software-SPI and no RTC without hardware modifications.
 
