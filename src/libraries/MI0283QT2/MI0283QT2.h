@@ -2,15 +2,11 @@
 #define MI0283QT2_h
 
 
-#ifdef __cplusplus
-extern "C" {
+#include <inttypes.h>
+#if defined(__AVR__)
+# include <avr/pgmspace.h>
 #endif
-  #include <inttypes.h>
-  #include <avr/pgmspace.h>
-  #include "fonts.h"
-#ifdef __cplusplus
-}
-#endif
+#include "fonts.h"
 #include "Print.h"
 
 

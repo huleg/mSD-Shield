@@ -1,11 +1,12 @@
 mSD-Shield Software Package
 ===========================
-  Visit github.com/watterott/msd-shield for updates.
+  Visit https://github.com/watterott/mSD-Shield for updates.
 
 
 Documentation
 -------------
   See docu.md
+    https://github.com/watterott/mSD-Shield/blob/master/src/docu.md
 
 
 Third party software
@@ -20,11 +21,12 @@ Third party software
 License
 -------
   See license.txt
+    https://github.com/watterott/mSD-Shield/blob/master/src/license.txt
 
 
 History
 -------
-         2013  v0.21  New directory struct.
+  Oct 01 2013  v0.21  New directory struct.
                       Support for MI0283QT9 added.
 
   Mar 09 2012  v0.20  Compatible with Arduino 1.0.

@@ -1,14 +1,7 @@
 #ifndef DS1307_h
 #define DS1307_h
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-  #include <inttypes.h>
-#ifdef __cplusplus
-}
-#endif
+#include <inttypes.h>
 
 
 class DS1307

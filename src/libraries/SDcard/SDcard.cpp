@@ -1,9 +1,10 @@
+#include <inttypes.h>
+#if defined(__AVR__)
+# include <avr/io.h>
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
-  #include <inttypes.h>
-  #include <avr/io.h>
-  #include <avr/interrupt.h>
   #include "ff.h"
   #include "diskio.h"
   #include "mmc.h"
@@ -11,9 +12,9 @@ extern "C" {
 }
 #endif
 #if ARDUINO >= 100
-#include "Arduino.h"
+# include "Arduino.h"
 #else
-#include "WProgram.h"
+# include "WProgram.h"
 #endif
 #include "../digitalWriteFast/digitalWriteFast.h"
 #include "SDcard.h"

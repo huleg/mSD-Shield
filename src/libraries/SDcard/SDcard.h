@@ -2,10 +2,10 @@
 #define SDcard_h
 
 
+#include <inttypes.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
-  #include <inttypes.h>
   #include "ff.h"
 #ifdef __cplusplus
 }

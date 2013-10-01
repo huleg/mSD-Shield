@@ -1,6 +1,7 @@
 # mSD-Shield
 
-French description and additional functions:http://www.mon-club-elec.fr/pmwiki_reference_arduino/pmwiki.php?n=Main.LibrairieMI0283QT2Afficheur
+French description and additional functions:
+http://www.mon-club-elec.fr/pmwiki_reference_arduino/pmwiki.php?n=Main.LibrairieMI0283QT2Afficheur
 
 
 ## Installation

@@ -2,13 +2,7 @@
 #define ADS7846_h
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-  #include <inttypes.h>
-#ifdef __cplusplus
-}
-#endif
+#include <inttypes.h>
 #include "../MI0283QT2/MI0283QT2.h"
 #include "../MI0283QT9/MI0283QT9.h"
 
