@@ -6,6 +6,8 @@ http://www.mon-club-elec.fr/pmwiki_reference_arduino/pmwiki.php?n=Main.Librairie
 
 ## Installation
 
+Download the files [here](https://github.com/watterott/mSD-Shield/archive/master.zip).
+
 Copy the content of */libraries/* to your Arduino lib folder */arduino/libraries/* or to your user documents folder */My Documents/Arduino/libraries/*
 If there are existing folders from a previous installation, please delete them before copying.
 
@@ -14,7 +16,7 @@ Further infos: http://arduino.cc/en/Guide/Libraries and http://arduino.cc/en/Hac
 
 ## Known Issues
 
-If using the Ethernet-Shield together with the mSD-Shield, this must be initialized before using the SD-Card.
+If using the Ethernet-Shield together with the mSD-Shield, this must be initialized before using the SD-Card. Because otherwise the W5100 Ethernet controller blocks the SPI interface.
 
 __mSD-Shield v1 (not mSD-Shield Mega-Edition):__
 
@@ -26,7 +28,8 @@ No Software changes are required.
     MOSI  51   ->   11
     MISO  50   ->   12
     
-Or if you dont want to make any pin changes, but use the mSD-Shield on the Mega, then Software-SPI has to be enabled in the Arduino libs. Uncomment the following lines:
+Or if you dont want to make any pin changes, but use the mSD-Shield on the Mega, then Software-SPI has to be enabled in the Arduino libs.
+Uncomment the following lines for this:
 
     libraries/ADS7846/ADS7846.cpp:40 (#define SOFTWARE_SPI)
     libraries/MIO283QT2/MIO283QT2.cpp:28 (#define SOFTWARE_SPI)
@@ -35,9 +38,14 @@ Or if you dont want to make any pin changes, but use the mSD-Shield on the Mega,
 
 For using the RTC on Mega boards the I2C pins have to be changed.
 
-         Mega  mSD-Shield v1
+        Mega   mSD-Shield v1
     SDA  20   ->   A4
     SCL  21   ->   A5
+
+
+## Examples
+
+Examples can be found in the Arduino IDE under ```File -> Examples -> mSDshield```.
 
 
 ## Libraries

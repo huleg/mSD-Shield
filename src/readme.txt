@@ -28,6 +28,7 @@ History
 -------
   Oct 01 2013  v0.21  New directory struct.
                       Support for MI0283QT9 added.
+                      Leonardo support.
 
   Mar 09 2012  v0.20  Compatible with Arduino 1.0.
                       Support for ATmega644 added.
