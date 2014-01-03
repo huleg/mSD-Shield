@@ -147,9 +147,8 @@ void ADS7846::init(void)
 # endif
   if(!(DDRB & (1<<SS_PORTBIT))) //SS is input
   {
-      PORTB |= (1<<SS_PORTBIT); //pull-up on
+    PORTB |= (1<<SS_PORTBIT); //pull-up on
   }
-
 #endif
 
   //set vars

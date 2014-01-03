@@ -107,29 +107,41 @@
 
 
 #if !defined(digitalWriteFast)
+#if defined(__AVR__)
 #define digitalWriteFast(P, V) \
 if (__builtin_constant_p(P) && __builtin_constant_p(V)) { \
   BIT_WRITE(*__digitalPinToPortReg(P), __digitalPinToBit(P), (V)); \
 } else { \
   digitalWrite((P), (V)); \
 }
+#else
+#define digitalWriteFast digitalWrite
+#endif
 #endif
 
 
 #if !defined(pinModeFast)
+#if defined(__AVR__)
 #define pinModeFast(P, V) \
 if (__builtin_constant_p(P) && __builtin_constant_p(V)) { \
   BIT_WRITE(*__digitalPinToDDRReg(P), __digitalPinToBit(P), (V)); \
 } else { \
   pinMode((P), (V)); \
 }
+#else
+#define pinModeFast pinMode
+#endif
 #endif
 
 
 #if !defined(digitalReadFast)
+#if defined(__AVR__)
 #define digitalReadFast(P) ( (int) __digitalReadFast((P)) )
 #define __digitalReadFast(P ) \
   (__builtin_constant_p(P) ) ? ( \
   ( BIT_READ(*__digitalPinToPINReg(P), __digitalPinToBit(P))) ) : \
   digitalRead((P))
+#else
+#define digitalReadFast digitalRead
+#endif
 #endif
