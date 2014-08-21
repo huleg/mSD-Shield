@@ -212,6 +212,7 @@
 <vertex x="7.4613" y="40.1638"/>
 <vertex x="4.2862" y="40.1638"/>
 </polygon>
+<text x="0" y="-1.27" size="1.27" layer="49" font="vector" ratio="10" align="top-left">Silkscreen: 21 tPlace + 25 tNames + 22 bPlace</text>
 </plain>
 <libraries>
 <library name="rcl">
