@@ -7,7 +7,7 @@ Shop: [mSD-Shield v2](http://www.watterott.com/en/mSD-Shield-v2-Data-Logging-Shi
 
 
 ## Features
-* microSD socket (SPI)
+* microSD socket (SPI) support SD and SDHC cards (up to 32GB)
 * DS1307 RTC (I2C Real-Time-Clock) with backup battery
 * Optional MI0283QT-Adapter (2.8" 320x240 Display with Touch-Panel)
 * Prototyping Area
