@@ -1,9 +1,11 @@
 # mSD-Shield
 The mSD-Shield is a plug-on module with microSD socket, RTC (real time clock) with battery backup, prototyping area and optional 2.8" TFT-Display with Touch-Panel for Arduino.
 
-Shop: [mSD-Shield v2](http://www.watterott.com/en/mSD-Shield-v2-Data-Logging-Shield)
-
 [![mSD-Shield](https://raw.github.com/watterott/mSD-Shield/master/pcb/mSD-Shield_v20.jpg)](http://www.watterott.com/en/mSD-Shield-v2-Data-Logging-Shield)
+
+
+## Shop
+* [mSD-Shield v2](http://www.watterott.com/en/mSD-Shield-v2-Data-Logging-Shield)
 
 
 ## Features
@@ -22,5 +24,5 @@ Shop: [mSD-Shield v2](http://www.watterott.com/en/mSD-Shield-v2-Data-Logging-Shi
 
 
 ## Software
-* [Arduino Library with Examples](https://github.com/watterott/Arduino-Libs)
-* [Old Arduino Library with Examples](https://github.com/watterott/mSD-Shield/tree/5054db114faef1bcfd9c1d165ed713a681a0edea/src)
+* [Arduino Library and Examples](https://github.com/watterott/Arduino-Libs)
+* [Old Arduino Library and Examples](https://github.com/watterott/mSD-Shield/tree/5054db114faef1bcfd9c1d165ed713a681a0edea/src)
