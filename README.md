@@ -18,9 +18,9 @@ The mSD-Shield is a plug-on module with microSD socket, RTC (real time clock) wi
 ## Hardware
 * ![mSD-Shield hardware dia](https://raw.github.com/watterott/mSD-Shield/master/img/hw_dia.png)
 * [Schematics + Layout](https://github.com/watterott/mSD-Shield/tree/master/pcb)
-* **mSD-Shield v2.x**: For Arduino Uno, Leonardo and Mega with R3-Layout (SDA+SCL next to AREF)
-* **mSD-Shield v1.x**: For Arduino Uno. On Mega/Leonardo boards only Software-SPI and no RTC without hardware modifications.
-* **Mega mSD-Shield v1.x**: For Arduino Uno and Mega. Uno/Mega adjustment via jumper.
+* **mSD-Shield v2.x**: For Uno, Leonardo and Mega with R3-Layout (SDA+SCL next to AREF)
+* **mSD-Shield v1.x**: For Uno. On Mega/Leonardo boards only Software-SPI and no RTC without hardware modifications.
+* **Mega mSD-Shield v1.x**: For Uno and Mega. Uno/Mega adjustment via jumper.
 
 
 ## Software
